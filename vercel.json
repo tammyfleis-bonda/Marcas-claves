@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/bonda_difusion_marcas_v3.html" }
+  ]
+}
