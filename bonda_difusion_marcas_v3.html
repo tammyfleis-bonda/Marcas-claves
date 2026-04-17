@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bonda — Difusión: Marcas Claves</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,'Segoe UI',sans-serif;font-size:13px;background:#f5f4f9;}
+.app{display:flex;min-height:780px;position:relative;overflow:hidden;}
+.sidebar{width:192px;min-width:192px;background:#fff;border-right:1px solid #e8e6f0;display:flex;flex-direction:column;flex-shrink:0;}
+.sb-logo{padding:15px 16px 11px;border-bottom:1px solid #e8e6f0;font-weight:800;font-size:18px;color:#6b3fa0;}
+.sb-org{padding:8px 14px;border-bottom:1px solid #f0eef6;}
+.sb-orgname{font-weight:600;color:#1a1a2e;font-size:12px;}
+.sb-time{color:#999;font-size:11px;}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 14px;color:#666;font-size:12px;}
+.ni.active{color:#6b3fa0;background:#f0ebfa;font-weight:600;}
+.dot{width:12px;height:12px;border-radius:50%;background:#ddd;flex-shrink:0;}
+.dot.p{background:#6b3fa0;}
+.nbadge{margin-left:auto;background:#6b3fa0;color:#fff;font-size:9px;padding:2px 5px;border-radius:4px;font-weight:700;}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{background:#fff;border-bottom:1px solid #e8e6f0;padding:0 22px;height:46px;display:flex;align-items:center;font-size:13px;color:#888;flex-shrink:0;}
+.topbar a{color:#6b3fa0;}
+.content{padding:20px 22px;flex:1;overflow-y:auto;}
+.ptitle{font-size:19px;font-weight:700;color:#1a1a2e;margin-bottom:3px;}
+.psub{font-size:12px;color:#888;margin-bottom:16px;}
+.slabel{font-size:10px;font-weight:700;color:#aaa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
+.divider{height:1px;background:#f0eef6;margin:16px 0;}
+.kit-row{display:flex;gap:12px;margin-bottom:4px;}
+.kit-card{background:#fff;border:1px solid #e8e6f0;border-radius:9px;padding:14px;flex:1;}
+.kicon{width:34px;height:34px;border-radius:8px;background:#f0ebfa;display:flex;align-items:center;justify-content:center;margin-bottom:7px;}
+.klabel{font-size:9px;color:#aaa;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.ktitle{font-size:12px;font-weight:600;color:#1a1a2e;margin:2px 0 5px;}
+.kdesc{font-size:11px;color:#888;line-height:1.4;margin-bottom:8px;}
+.btn{border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;padding:6px 13px;}
+.btn-p{background:#6b3fa0;color:#fff;}
+.btn-s{background:#fff;color:#6b3fa0;border:1px solid #c5aee8;}
+.btn-g{background:transparent;color:#6b3fa0;border:none;font-size:11px;font-weight:600;cursor:pointer;padding:5px 7px;}
+.btn-sm{font-size:11px;padding:5px 11px;}
+.tnew{background:#6b3fa0;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+.tag-ok{background:#e8f5e9;color:#2e7d32;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+.marcas-card{background:#fff;border:1px solid #e8e6f0;border-radius:10px;padding:16px 18px;display:flex;align-items:center;gap:14px;}
+.marcas-created{background:#fff;border:1px solid #e8e6f0;border-radius:10px;overflow:hidden;}
+.mc-header{padding:14px 18px 10px;display:flex;align-items:flex-start;gap:14px;}
+.micon{width:36px;height:36px;border-radius:8px;background:#f0ebfa;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.mc-body{flex:1;min-width:0;}
+.mc-title{font-size:13px;font-weight:600;color:#1a1a2e;}
+.mc-desc{font-size:11px;color:#888;margin-top:2px;line-height:1.5;}
+.mc-actions{padding:0 18px 14px 68px;display:flex;gap:7px;}
+.loading-bar{height:3px;background:#f0eef6;overflow:hidden;}
+.loading-fill{height:100%;background:#6b3fa0;animation:load 1.8s ease-in-out infinite;}
+@keyframes load{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
+.overlay{position:absolute;inset:0;background:rgba(10,5,25,0.35);z-index:20;display:flex;justify-content:flex-end;}
+.drawer{width:400px;background:#fff;display:flex;flex-direction:column;border-left:1px solid #e0d8f4;height:100%;overflow:hidden;}
+.dh{padding:16px 18px 12px;border-bottom:1px solid #e8e6f0;flex-shrink:0;}
+.dhtop{display:flex;align-items:center;justify-content:space-between;}
+.dhtitle{font-size:15px;font-weight:700;color:#1a1a2e;}
+.dhsub{font-size:12px;color:#888;margin-top:3px;}
+.xbtn{width:26px;height:26px;border-radius:6px;background:#f5f4f9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.cbar{padding:10px 18px;border-bottom:1px solid #f0eef6;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.cpill{background:#f0ebfa;color:#3C3489;font-size:11px;font-weight:700;border-radius:20px;padding:3px 11px;white-space:nowrap;}
+.ctrack{flex:1;height:4px;background:#f0eef6;border-radius:2px;overflow:hidden;}
+.cfill{height:100%;background:#6b3fa0;border-radius:2px;transition:width .25s;}
+.chint{font-size:11px;color:#888;white-space:nowrap;}
+.dsearch{padding:10px 18px;border-bottom:1px solid #f0eef6;display:flex;gap:7px;flex-shrink:0;}
+.sinput{flex:1;border:1px solid #e0d8f4;border-radius:6px;padding:6px 10px;font-size:12px;color:#333;background:#fff;}
+.sselect{border:1px solid #e0d8f4;border-radius:6px;padding:6px 9px;font-size:11px;color:#666;background:#fff;max-width:130px;}
+.brand-list{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px;}
+.bi{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #e8e6f0;border-radius:8px;cursor:pointer;transition:border-color .15s,background .15s;}
+.bi:hover{border-color:#c5aee8;background:#faf8ff;}
+.bi.sel{border-color:#6b3fa0;background:#f8f4ff;}
+.bi.dis{opacity:.32;pointer-events:none;}
+.blogo{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;flex-shrink:0;}
+.binfo{flex:1;}
+.bname{font-size:12px;font-weight:600;color:#1a1a2e;}
+.bcat{font-size:10px;color:#999;margin-top:1px;}
+.chk{width:16px;height:16px;border-radius:4px;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto;transition:all .15s;background:#fff;}
+.chk.on{background:#6b3fa0;border-color:#6b3fa0;}
+.df{padding:12px 18px;border-top:1px solid #e8e6f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fff;}
+.df-hint{font-size:11px;color:#888;}
+.df-hint strong{color:#6b3fa0;}
+.df-btns{display:flex;gap:7px;}
+.preview-modal-wrap{min-height:500px;background:rgba(10,5,25,0.35);display:flex;align-items:center;justify-content:center;position:absolute;inset:0;z-index:30;}
+.preview-modal{background:#fff;border-radius:12px;border:1px solid #e0d8f4;width:380px;overflow:hidden;}
+.pm-header{padding:14px 16px;border-bottom:1px solid #e8e6f0;display:flex;align-items:center;justify-content:space-between;}
+.pm-title{font-size:14px;font-weight:700;color:#1a1a2e;}
+.pm-body{padding:16px;}
+.pm-footer{padding:12px 16px;border-top:1px solid #e8e6f0;display:flex;justify-content:flex-end;gap:8px;}
+.piece-card{border:1px solid #e8e6f0;border-radius:8px;overflow:hidden;}
+.pc-top{background:#6b3fa0;padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.pc-logo{width:26px;height:26px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#6b3fa0;}
+.pc-ttl{color:#fff;font-size:12px;font-weight:600;}
+.pc-body{background:#f8f5ff;padding:14px;}
+.pc-sub{font-size:10px;color:#888;text-align:center;margin-bottom:3px;}
+.pc-claim{font-size:13px;font-weight:700;color:#6b3fa0;text-align:center;margin-bottom:10px;}
+.pc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.pc-cell{background:#fff;border:1px solid #e8e6f0;border-radius:6px;padding:8px 6px;text-align:center;}
+.pc-blogo{width:28px;height:28px;border-radius:5px;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;}
+.pc-bname{font-size:9px;font-weight:600;color:#444;}
+.pc-bdisc{font-size:8px;color:#999;margin-top:1px;}
+.pc-cta{text-align:center;}
+.pc-ctabtn{display:inline-block;background:#6b3fa0;color:#fff;border-radius:5px;padding:7px 16px;font-size:11px;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sb-logo">bonda</div>
+    <div class="sb-org"><div class="sb-orgname">Bonda World</div><div class="sb-time">10:36am (UTC-03)</div></div>
+    <div style="padding:6px 0;">
+      <div class="ni"><div class="dot"></div>Home</div>
+      <div class="ni"><div class="dot"></div>Users</div>
+      <div class="ni"><div class="dot"></div>Points</div>
+      <div class="ni"><div class="dot"></div>Communication</div>
+      <div class="ni active"><div class="dot p"></div>Difusión<span class="nbadge">New</span></div>
+      <div class="ni"><div class="dot"></div>Reports</div>
+      <div class="ni"><div class="dot"></div>Marketplace</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar"><a>Difusión</a></div>
+    <div class="content">
+      <div class="ptitle">Difusión</div>
+      <div class="psub">Materiales y campañas de comunicación para tu empresa</div>
+
+      <div class="slabel">Kit de bienvenida</div>
+      <div class="kit-row">
+        <div class="kit-card">
+          <div class="kicon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 1h10v14H3V1zm2 3h6M5 7h6M5 10h4" stroke="#6b3fa0" stroke-width="1.2"/></svg></div>
+          <div class="klabel">PDF</div><div class="ktitle">Instructivo de uso</div>
+          <div class="kdesc">Guía completa para el onboarding de tus usuarios.</div>
+          <div style="display:flex;gap:5px;"><button class="btn btn-p btn-sm">Descargar</button><button class="btn-g btn-sm">Preview</button></div>
+        </div>
+        <div class="kit-card">
+          <div class="kicon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="#6b3fa0" stroke-width="1.2"/></svg></div>
+          <div class="klabel">PNG</div><div class="ktitle">Flyer digital</div>
+          <div class="kdesc">Comunicá el lanzamiento en segundos via WhatsApp o email.</div>
+          <div style="display:flex;gap:5px;"><button class="btn btn-p btn-sm">Descargar</button><button class="btn-g btn-sm">Preview</button></div>
+        </div>
+        <div class="kit-card">
+          <div class="kicon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="6" rx="1" stroke="#6b3fa0" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="#6b3fa0" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="#6b3fa0" stroke-width="1.2"/></svg></div>
+          <div class="klabel">PDF</div><div class="ktitle">Table Tent</div>
+          <div class="kdesc">Para cafeterías, pasillos y salas de reuniones.</div>
+          <div style="display:flex;gap:5px;"><button class="btn btn-p btn-sm">Descargar</button><button class="btn-g btn-sm">Preview</button></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ESTADO A: sin pieza -->
+      <div id="state-empty">
+        <div class="slabel">Marcas claves <span class="tnew">NUEVO</span></div>
+        <div class="marcas-card">
+          <div class="micon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="3" stroke="#6b3fa0" stroke-width="1.3"/><circle cx="3" cy="4.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="15" cy="4.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="3" cy="13.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="15" cy="13.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/></svg></div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:#1a1a2e;">Pieza de marcas claves</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">Seleccioná 6 marcas del catálogo y generá una pieza personalizada para distribuir a tus empleados.</div>
+          </div>
+          <button class="btn btn-p btn-sm" style="flex-shrink:0;" onclick="openDrawer()">Crear nueva pieza</button>
+        </div>
+      </div>
+
+      <!-- ESTADO B: generando -->
+      <div id="state-loading" style="display:none;">
+        <div class="slabel">Marcas claves <span class="tnew">NUEVO</span></div>
+        <div class="marcas-created">
+          <div class="loading-bar"><div class="loading-fill"></div></div>
+          <div class="mc-header">
+            <div class="micon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="3" stroke="#6b3fa0" stroke-width="1.3"/><circle cx="3" cy="4.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="15" cy="4.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="3" cy="13.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="15" cy="13.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/></svg></div>
+            <div class="mc-body">
+              <div class="mc-title">Pieza de marcas claves</div>
+              <div class="mc-desc">Seleccioná 6 marcas del catálogo y generá una pieza personalizada para distribuir a tus empleados.</div>
+            </div>
+          </div>
+          <div class="mc-actions">
+            <button class="btn btn-s btn-sm" style="opacity:.4;cursor:not-allowed;">Ver preview</button>
+            <button class="btn btn-p btn-sm" style="opacity:.4;cursor:not-allowed;">Descargar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTADO C: pieza lista -->
+      <div id="state-created" style="display:none;">
+        <div class="slabel">Marcas claves <span class="tag-ok">Pieza lista</span></div>
+        <div class="marcas-created">
+          <div class="mc-header">
+            <div class="micon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="3" stroke="#6b3fa0" stroke-width="1.3"/><circle cx="3" cy="4.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="15" cy="4.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="3" cy="13.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/><circle cx="15" cy="13.5" r="1.8" stroke="#6b3fa0" stroke-width="1.1"/></svg></div>
+            <div class="mc-body">
+              <div class="mc-title">Pieza de marcas claves</div>
+              <div class="mc-desc">Seleccioná 6 marcas del catálogo y generá una pieza personalizada para distribuir a tus empleados.</div>
+            </div>
+          </div>
+          <div class="mc-actions">
+            <button class="btn btn-g btn-sm" onclick="openDrawer()">Modificar</button>
+            <button class="btn btn-s btn-sm" onclick="openPreview()">Ver preview</button>
+            <button class="btn btn-p btn-sm">Descargar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DRAWER -->
+  <div class="overlay" id="overlay" style="display:none;">
+    <div class="drawer">
+      <div class="dh">
+        <div class="dhtop">
+          <div class="dhtitle" id="drawer-title">Seleccioná las marcas</div>
+          <button class="xbtn" onclick="closeDrawer()">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="dhsub" id="drawer-sub">Elegí exactamente 6 marcas para tu pieza</div>
+      </div>
+      <div class="cbar">
+        <div class="cpill" id="cpill">0 / 6 seleccionadas</div>
+        <div class="ctrack"><div class="cfill" id="cfill" style="width:0%;"></div></div>
+        <div class="chint" id="chint">Seleccioná 6 para continuar</div>
+      </div>
+      <div class="dsearch">
+        <input class="sinput" type="text" placeholder="Buscar marca...">
+        <select class="sselect"><option>Todas las cat.</option><option>Gastronomía</option><option>Tecnología</option><option>Supermercado</option></select>
+      </div>
+      <div class="brand-list" id="brand-list"></div>
+      <div class="df">
+        <div class="df-hint" id="df-hint">Seleccioná <strong>6 marcas</strong> para continuar</div>
+        <div class="df-btns">
+          <button class="btn btn-s" onclick="closeDrawer()">Cancelar</button>
+          <button class="btn btn-p" id="gen-btn" disabled style="opacity:.4;cursor:not-allowed;" onclick="handleSave()">Guardar pieza</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW MODAL -->
+  <div class="preview-modal-wrap" id="preview-modal" style="display:none;">
+    <div class="preview-modal">
+      <div class="pm-header">
+        <div class="pm-title">Vista previa de tu pieza</div>
+        <button class="xbtn" onclick="closePreview()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="pm-body">
+        <div class="piece-card">
+          <div class="pc-top"><div class="pc-logo">LOGO</div><div class="pc-ttl">Beneficios destacados para vos</div></div>
+          <div class="pc-body">
+            <div class="pc-sub">Descubrí las mejores marcas en</div>
+            <div class="pc-claim">tu plataforma de beneficios</div>
+            <div class="pc-grid" id="preview-grid"></div>
+            <div class="pc-cta"><div class="pc-ctabtn">Accedé a todos tus beneficios</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="pm-footer">
+        <button class="btn btn-s btn-sm" onclick="closePreview()">Cerrar</button>
+        <button class="btn btn-p btn-sm">Descargar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var brandsData=[
+  {b:'Starbucks',bg:'#f0ebfa',tc:'#3C3489',abbr:'SB',disc:'10% desc.',cat:'Gastronomía'},
+  {b:'Samsung',bg:'#e6f1fb',tc:'#0C447C',abbr:'SAM',disc:'50% desc.',cat:'Tecnología'},
+  {b:'Alamo',bg:'#faeeda',tc:'#633806',abbr:'AL',disc:'15% desc.',cat:'Autos'},
+  {b:'Vea',bg:'#eaf3de',tc:'#27500A',abbr:'VEA',disc:'Gift Card',cat:'Supermercado'},
+  {b:'The Food Market',bg:'#e1f5ee',tc:'#085041',abbr:'TFM',disc:'Gift Card',cat:'Gastronomía'},
+  {b:'Saeta',bg:'#e6f1fb',tc:'#0C447C',abbr:'SAE',disc:'Gift Card',cat:'Transporte'},
+  {b:'Deel',bg:'#eeedfe',tc:'#3C3489',abbr:'DEL',disc:'20% desc.',cat:'Payroll'},
+  {b:'Alot',bg:'#faeeda',tc:'#633806',abbr:'ALT',disc:'50% desc.',cat:'Librería'},
+  {b:'Great Place to Work',bg:'#faece7',tc:'#712B13',abbr:'GPT',disc:'3 meses gratis',cat:'RRHH'},
+  {b:'Grupo Tronchetto',bg:'#f1efe8',tc:'#444441',abbr:'GT',disc:'15% desc.',cat:'Gastronomía'}
+];
+var selected=[];
+var hasPiece=false;
+
+function getInfo(n){return brandsData.find(function(b){return b.b===n;});}
+
+function buildList(){
+  var list=document.getElementById('brand-list');
+  list.innerHTML='';
+  brandsData.forEach(function(info){
+    var isSel=selected.indexOf(info.b)>-1;
+    var el=document.createElement('div');
+    el.className='bi'+(isSel?' sel':'');
+    el.dataset.b=info.b;
+    el.innerHTML=
+      '<div class="blogo" style="background:'+info.bg+';color:'+info.tc+';">'+info.abbr+'</div>'+
+      '<div class="binfo"><div class="bname">'+info.b+'</div><div class="bcat">'+info.cat+' · '+info.disc+'</div></div>'+
+      '<div class="chk'+(isSel?' on':'')+'">'+
+        (isSel?'<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+
+      '</div>';
+    el.onclick=function(){toggle(el,info.b);};
+    list.appendChild(el);
+  });
+}
+
+function update(){
+  var n=selected.length,rem=6-n;
+  document.getElementById('cpill').textContent=n+' / 6 seleccionadas';
+  document.getElementById('cfill').style.width=Math.round(n/6*100)+'%';
+  document.getElementById('chint').textContent=n===6?'¡Listo!':'Seleccioná '+rem+' más';
+  var btn=document.getElementById('gen-btn');
+  var hint=document.getElementById('df-hint');
+  if(n===6){
+    btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
+    hint.innerHTML='<strong style="color:#2e7d32;">Todo listo para guardar</strong>';
+  } else {
+    btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';
+    hint.innerHTML='Seleccioná <strong>'+rem+' más</strong> para continuar';
+  }
+  document.querySelectorAll('.bi').forEach(function(el){
+    el.classList.toggle('dis',!el.classList.contains('sel')&&n>=6);
+  });
+}
+
+function toggle(el,name){
+  if(el.classList.contains('dis')) return;
+  var chk=el.querySelector('.chk');
+  if(el.classList.contains('sel')){
+    el.classList.remove('sel');chk.classList.remove('on');chk.innerHTML='';
+    selected=selected.filter(function(s){return s!==name;});
+  } else {
+    if(selected.length>=6) return;
+    el.classList.add('sel');chk.classList.add('on');
+    chk.innerHTML='<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    selected.push(name);
+  }
+  update();
+}
+
+function openDrawer(){
+  document.getElementById('drawer-title').textContent=hasPiece?'Modificar marcas':'Seleccioná las marcas';
+  document.getElementById('drawer-sub').textContent=hasPiece?'Cambiá las marcas de tu pieza y guardá los cambios':'Elegí exactamente 6 marcas para tu pieza';
+  document.getElementById('gen-btn').textContent=hasPiece?'Guardar cambios':'Guardar pieza';
+  buildList();update();
+  document.getElementById('overlay').style.display='flex';
+}
+function closeDrawer(){document.getElementById('overlay').style.display='none';}
+
+function handleSave(){
+  if(selected.length!==6) return;
+  closeDrawer();
+  document.getElementById('state-empty').style.display='none';
+  document.getElementById('state-created').style.display='none';
+  document.getElementById('state-loading').style.display='block';
+  setTimeout(function(){
+    document.getElementById('state-loading').style.display='none';
+    document.getElementById('state-created').style.display='block';
+    hasPiece=true;
+  },2000);
+}
+
+function openPreview(){
+  var grid=document.getElementById('preview-grid');
+  grid.innerHTML='';
+  selected.forEach(function(name){
+    var info=getInfo(name);
+    var c=document.createElement('div');
+    c.className='pc-cell';
+    c.innerHTML='<div class="pc-blogo" style="background:'+info.bg+';color:'+info.tc+';">'+info.abbr+'</div><div class="pc-bname">'+info.b+'</div><div class="pc-bdisc">'+info.disc+'</div>';
+    grid.appendChild(c);
+  });
+  document.getElementById('preview-modal').style.display='flex';
+}
+function closePreview(){document.getElementById('preview-modal').style.display='none';}
+</script>
+</body>
+</html>
